@@ -48,15 +48,9 @@ enter()
 
 def scrap():
 
-	sleep(2)	
+	sleep(1)	
 
-	curent_url = driver.current_url
-	soup = BeautifulSoup(curent_url, 'html.parser')
-	finder = soup.find('div', class_ ='search-results__item row abt-focusable')
-	departure = finder.find_all('div', class_ ='col-5') 
-	for item in departure:
-		x = item.find('span')
-		if x:
-			print(x.text.strip())	
+	get_element = driver.find_element(By.XPATH,"//span[@class='stime search-results__item-hour']").text
+	print(get_element)  
 
 scrap()
