@@ -50,7 +50,13 @@ def scrap():
 
 	sleep(1)	
 
-	get_element = driver.find_element(By.XPATH,"//span[@class='stime search-results__item-hour']").text
-	print(get_element)  
-
+	get_element = driver.find_elements(By.XPATH,"//span[@class='stime search-results__item-hour']")
+	delay = driver.find_elements(By.XPATH,"//span[@class='txlc']")
+	if delay is None:
+		for elt in get_element:
+			print(elt.text) 
+	else:
+		for elts in delay:
+			for elt in get_element:
+				print(elts.text,elt.text)
 scrap()
