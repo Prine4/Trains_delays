@@ -1,29 +1,24 @@
 import requests 
 import packaging
+import time
 
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
-
 from time import sleep 
 
 def imput_to_web():
 
 	global departureFrom
 	global arrivalTo
-#	global date
-#	global time
 
 	departureFrom=input('Wyjazd z:')	
 	arrivalTo=input('Przyjazd do:')
-#	date=input('Podaj date wyjazdu:(format[##.##.####])')
-#	time=input('Podaj godzine wyjazdu:(format[##:##])')
 	
-
 imput_to_web()
 
 def serching():
@@ -37,36 +32,31 @@ def serching():
 serching()
 
 def enter():
-	
+
 	global departureFrom
 	global arrivalTo
-#	global date
-#	global time
 
-	try:
-		element = WebDriverWait(driver, 1).until(
-        EC.presence_of_element_located((By.XPATH,"//div[@class='k-widget k-window k-window--with-footer cookieman-window']")))
-	finally:
+	departureFrom_box = driver.find_element(By.ID,'departureFrom')
+	departureFrom_box.send_keys(departureFrom)  
 
-		driver.find_element(By.XPATH,"//button[@class='btn cookieman-operation full-width--phone revoke-all-submit txuc']").click()
+	arrivalTo_box = driver.find_element(By.ID,'arrivalTo')
+	arrivalTo_box.send_keys(arrivalTo)
 
-		departureFrom_box = driver.find_element(By.ID,'departureFrom')
-		departureFrom_box.send_keys(departureFrom)  
-			
-		arrivalTo_box = driver.find_element(By.ID,'arrivalTo')
-		arrivalTo_box.send_keys(arrivalTo)
-
-#	date_box = driver.find_element(By.ID,'main-search__dateStart')	
-#	date_box.send_keys(date_box)
-#	sleep(1)
-#
-#	time_box = driver.find_element(By.ID,'main-search__timeStart')
-#	time_box.send_keys(time_box)
-#	sleep(1)
-
-			
-		driver.find_element(By.XPATH,"//button[@class='btn btn--lg btn-start-search txuc']").click()
-
-	sleep(10)
-
+	driver.find_element(By.XPATH,"//button[@class='btn btn--lg btn-start-search txuc']").click()
+	
 enter()
+
+def scrap():
+
+	sleep(2)	
+
+	curent_url = driver.current_url
+	soup = BeautifulSoup(curent_url, 'html.parser')
+	finder = soup.find('div', class_ ='search-results__item row abt-focusable')
+	departure = finder.find_all('div', class_ ='col-5') 
+	for item in departure:
+		x = item.find('span')
+		if x:
+			print(x.text.strip())	
+
+scrap()
