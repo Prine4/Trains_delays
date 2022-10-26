@@ -1,62 +1,58 @@
-import requests 
-import packaging
-import time
-
-from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from time import sleep 
 
-def imput_to_web():
+rejectCookiesXPATH = "//button[@class='btn cookieman-operation full-width--phone revoke-all-submit txuc']"
+searchBtnXPATH = "//button[@class='btn btn--lg btn-start-search txuc']"
+departureFromBottomID = "departureFrom"
+arrivalToBottomID = "arrivalTo"
+morePrzyXPATH = "//button[@class='search-results__item-show-changes btn btn--transparent txlc']"
 
-	global departureFrom
-	global arrivalTo
 
-	departureFrom=input('Wyjazd z:')	
-	arrivalTo=input('Przyjazd do:')
-	
-imput_to_web()
+def input_to_web():
+    return 'Warszawa Wschodnia', 'Gdynia Główna'
 
-def serching():
-	
-	global driver
 
-	driver = webdriver.Chrome(executable_path=r'/home/krzysztof/Desktop/Git/Trains_delays/master/chromedriver_linux64/chromedriver')
-	driver.get('https://www.portalpasazera.pl/');
-	print('Jestem w Poratlu pasażera')
-	
-serching()
+def searching(url, webdriver_path):
+    chrome_driver = webdriver.Chrome(executable_path=webdriver_path)
+    chrome_driver.get(url)
+    return chrome_driver
 
-def enter():
 
-	global departureFrom
-	global arrivalTo
+def enter(departure, arrival):
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, rejectCookiesXPATH)))
+    driver.find_element(By.XPATH, rejectCookiesXPATH).click()
 
-	departureFrom_box = driver.find_element(By.ID,'departureFrom')
-	departureFrom_box.send_keys(departureFrom)  
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, searchBtnXPATH)))
+    driver.find_element(By.ID, departureFromBottomID).send_keys(departure)
+    driver.find_element(By.ID, arrivalToBottomID).send_keys(arrival)
+    driver.find_element(By.XPATH, searchBtnXPATH).click()
 
-	arrivalTo_box = driver.find_element(By.ID,'arrivalTo')
-	arrivalTo_box.send_keys(arrivalTo)
-
-	driver.find_element(By.XPATH,"//button[@class='btn btn--lg btn-start-search txuc']").click()
-	
-enter()
 
 def scrap():
+    WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, ".stime.search-results__item-hour"))
+    )
 
-	sleep(1)	
+    # todo kod ponizej bedzie przydatny bla bla bla bla bla NIE USUWAC
+    # for btn in driver.find_elements(By.XPATH, morePrzyXPATH): btn.click()
 
-	get_element = driver.find_elements(By.XPATH,"//span[@class='stime search-results__item-hour']")
-	delay = driver.find_elements(By.XPATH,"//span[@class='txlc']")
-	if delay is None:
-		for elt in get_element:
-			print(elt.text) 
-	else:
-		for elts in delay:
-			for elt in get_element:
-				print(elts.text,elt.text)
+    times = driver.find_elements(By.CSS_SELECTOR, ".search-results__item-hour")
+
+    for i, t in enumerate(times):
+        if i % 2 == 0:
+            print('Odjazd: ', t.text)
+        else:
+            print('Przyjazd: ', t.text)
+
+
+departureFrom, arrivalTo = input_to_web()
+
+driver = searching('https://www.portalpasazera.pl/', 'chromedriver_linux64/chromedriver')
+
+enter(departureFrom, arrivalTo)
+
 scrap()
+
+driver.close()
