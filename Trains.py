@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options  
 
 rejectCookiesXPATH = "//button[@class='btn cookieman-operation full-width--phone revoke-all-submit txuc']"
 searchBtnXPATH = "//button[@class='btn btn--lg btn-start-search txuc']"
@@ -15,6 +16,9 @@ def input_to_web():
 
 
 def searching(url, webdriver_path):
+#    chrome_options = Options() #te linijki sprawiają ze ten kod działa na serwerze i żeby też na serwerze zadziałał to trzeba wyjebać linijkę 21 
+#    chrome_options.add_argument("--headless") 
+#    chrome_driver = webdriver.Chrome(chrome_options=chrome_options)
     chrome_driver = webdriver.Chrome(executable_path=webdriver_path)
     chrome_driver.get(url)
     return chrome_driver
