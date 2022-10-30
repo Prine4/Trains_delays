@@ -12,14 +12,13 @@ morePrzyXPATH = "//button[@class='search-results__item-show-changes btn btn--tra
 
 
 def input_to_web():
-    return 'Warszawa Wschodnia', 'Gdynia Główna'
+     return 'Warszawa Wschodnia', 'Sopot Wyścigi'
 
 
 def searching(url, webdriver_path):
-#    chrome_options = Options() #te linijki sprawiają ze ten kod działa na serwerze i żeby też na serwerze zadziałał to trzeba wyjebać linijkę 21 
-#    chrome_options.add_argument("--headless") 
-#    chrome_driver = webdriver.Chrome(chrome_options=chrome_options)
-    chrome_driver = webdriver.Chrome(executable_path=webdriver_path)
+    chrome_options = Options() #te linijki sprawiają ze ten kod działa na serwerze i żeby też na serwerze zadziałał to trzeba wyjebać linijkę 21 
+    chrome_options.add_argument("--headless") 
+    chrome_driver = webdriver.Chrome(chrome_options=chrome_options)
     chrome_driver.get(url)
     return chrome_driver
 
@@ -44,12 +43,11 @@ def scrap():
 
     times = driver.find_elements(By.CSS_SELECTOR, ".search-results__item-hour")
 
-    for i, t in enumerate(times):
-        if i % 2 == 0:
-            print('Odjazd: ', t.text)
-        else:
-            print('Przyjazd: ', t.text)
-
+    for t in times:
+        var = (t.text.replace('\n',''))
+        if var =="":
+            continue
+        print(var)
 
 departureFrom, arrivalTo = input_to_web()
 
