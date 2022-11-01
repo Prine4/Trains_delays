@@ -44,10 +44,14 @@ def scrap():
     times = driver.find_elements(By.CSS_SELECTOR, ".search-results__item-hour")
 
     for t in times:
-        var = (t.text.replace('\n',''))
-        if var =="":
+        Raw_Data = (t.text.replace('\n',''))
+        if Raw_Data =="":
             continue
-        print(var)
+        for i, e in enumerate(Raw_Data):
+            if (i % 2) == 0:
+                print('Odjazd:',Raw_Data)
+            else:
+                print('Przyjazd:',Raw_Data)
 
 departureFrom, arrivalTo = input_to_web()
 
@@ -58,3 +62,4 @@ enter(departureFrom, arrivalTo)
 scrap()
 
 driver.close()
+
