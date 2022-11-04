@@ -1,3 +1,4 @@
+from typing import List
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -33,7 +34,7 @@ def enter(departure, arrival):
     driver.find_element(By.XPATH, searchBtnXPATH).click()
 
 
-def scrap():
+def scrap() -> List:
     WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, ".stime.search-results__item-hour"))
     )
@@ -42,16 +43,19 @@ def scrap():
     # for btn in driver.find_elements(By.XPATH, morePrzyXPATH): btn.click()
 
     times = driver.find_elements(By.CSS_SELECTOR, ".search-results__item-hour")
+    
+    result = []
+    times_str = []
 
-    for t in times:
-        Raw_Data = (t.text.replace('\n',''))
-        if Raw_Data =="":
-            continue
-        for i, e in enumerate(Raw_Data):
-            if (i % 2) == 0:
-                print('Odjazd:',Raw_Data)
-            else:
-                print('Przyjazd:',Raw_Data)
+    for time in times:
+        time_str = time.text.replace('\n', '')
+        if time_str != '':
+            times_str.append(time_str)
+
+    for i in range(0, len(times_str)-1):
+        result.append({'departure': times_str[i], 'arrival': times_str[i+1], 'reason': None})
+
+    return result
 
 departureFrom, arrivalTo = input_to_web()
 
@@ -59,7 +63,7 @@ driver = searching('https://www.portalpasazera.pl/', 'chromedriver_linux64/chrom
 
 enter(departureFrom, arrivalTo)
 
-scrap()
+print(scrap())
 
 driver.close()
 
